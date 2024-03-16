@@ -45,6 +45,7 @@ jobs:
       run: .\build\vsts-build.ps1 -ApiKey ${{ secrets.apikey }} -AutoVersion:${{ inputs.autoversion }} -SkipPublish:${{ inputs.skippublish }}
       shell: powershell
     
+    
     - name: Get version
       run: |
         $publishDir = Get-Item -Path publish
@@ -52,6 +53,7 @@ jobs:
         $githubReleaseVersion = "$($version.Major).$($version.Minor).$($version.Build)"
         "VERSION=$githubReleaseVersion" >> $env:GITHUB_ENV
       shell: powershell
+      if: ${{ success() && inputs.skipghrelease == '$False' }}
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v2
@@ -61,3 +63,4 @@ jobs:
         draft: false
         prerelease: true
         generate_release_notes: true
+      if: ${{ success() && inputs.skipghrelease == '$False' }}
